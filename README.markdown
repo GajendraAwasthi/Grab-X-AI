@@ -36,7 +36,7 @@ To run GRAB-X-AI, ensure you have the following:
 - A valid **Gemini API Key** (replace the placeholder in the code with your own key).
 - Obtain your API key from [Gemini API Google DEV ](https://ai.google.dev/gemini-api/docs/) or the Gemini API provider.
 -Video Example
-![API Key](GIFs/HOWTOAPI.GIF)
+![API Key](GIFs/HOWTOAPI.gif)
 ## Installation
 1. **Clone the Repository**:
    ```bash
