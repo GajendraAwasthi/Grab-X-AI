@@ -45,7 +45,7 @@ To run GRAB-X-AI, ensure you have the following:
    ```
 
 2. **Update API Key**:
-   - Open `main.c` and replace the `API_KEY` constant with your Gemini API key:
+   - Open `GRAB-X-AI.c` using terminal or else softwares and replace the `API_KEY` constant with your Gemini API key:
      ```c
      //In the Program file ther is section for entering api key enter it like below example
      const char *API_KEY = "Enter-your-api-key-here";
