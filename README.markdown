@@ -34,8 +34,9 @@ To run GRAB-X-AI, ensure you have the following:
 
 ### API Key
 - A valid **Gemini API Key** (replace the placeholder in the code with your own key).
-- Obtain your API key from [Google Cloud Console](https://cloud.google.com/) or the Gemini API provider.
-
+- Obtain your API key from [Gemini API Google DEV ](https://ai.google.dev/gemini-api/docs/) or the Gemini API provider.
+-Video Example
+![API Key](GIFs/HOWTOAPI.GIF)
 ## Installation
 1. **Clone the Repository**:
    ```bash
@@ -47,17 +48,17 @@ To run GRAB-X-AI, ensure you have the following:
    - Open `main.c` and replace the `API_KEY` constant with your Gemini API key:
      ```c
      //In the Program file ther is section for entering api key enter it like below example
-     const char *API_KEY = "your-api-key-here";
+     const char *API_KEY = "Enter-your-api-key-here";
      ```
 
 3. **Compile the Program**:
    - On Linux/macOS:
      ```bash
-     gcc -o grab-x-ai main.c
+     gcc -o Grab-X-AI main.c
      ```
    - On Windows (with MinGW):
      ```bash
-     gcc -o grab-x-ai.exe main.c
+     gcc -o Grab-X-AI.exe main.c
      ```
 
 4. **Install cURL** (if not already installed):
@@ -74,11 +75,11 @@ To run GRAB-X-AI, ensure you have the following:
 ## Usage
 1. **Run the Program**:
    ```bash
-   ./grab-x-ai
+   ./Grab-X-AI
    ```
    On Windows:
    ```bash
-   grab-x-ai.exe
+   Grab-X-AI.exe
    ```
 
 2. **Authentication**:
