@@ -116,18 +116,22 @@ Below are some example screenshots of the GRAB-X-AI interface:
 
 ### Login Screen
 ![Login Screen](screenshots/login.PNG)
+
 *Description*: The password-protected login interface.
 
 ### Main Menu
 ![Main Menu](screenshots/menu.PNG)
+
 *Description*: The main menu with options to chat, view history, or get help.
 
 ### Chat Session
 ![Chat Session](screenshots/chat.PNG)
+
 *Description*: A sample chat session with the AI.
 
 ### Chat History
 ![Chat History](screenshots/history.PNG)
+
 *Description*: Viewing saved chat history.
 
 *Note*: Dont use our files without our permission or without giving us credits
