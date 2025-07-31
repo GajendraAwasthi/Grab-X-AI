@@ -54,11 +54,11 @@ To run GRAB-X-AI, ensure you have the following:
 3. **Compile the Program**:
    - On Linux/macOS:
      ```bash
-     gcc -o Grab-X-AI main.c
+     gcc -o Grab-X-AI GRAB-X-AI.c
      ```
    - On Windows (with MinGW):
      ```bash
-     gcc -o Grab-X-AI.exe main.c
+     gcc -o Grab-X-AI.exe GRAB-X-AI.c
      ```
 
 4. **Install cURL** (if not already installed):
@@ -75,11 +75,11 @@ To run GRAB-X-AI, ensure you have the following:
 ## Usage
 1. **Run the Program**:
    ```bash
-   ./Grab-X-AI
+   ./GRAB-X-AI
    ```
    On Windows:
    ```bash
-   Grab-X-AI.exe
+   GRAB-X-AI.exe
    ```
 
 2. **Authentication**:
