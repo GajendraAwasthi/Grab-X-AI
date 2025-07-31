@@ -39,13 +39,14 @@ To run GRAB-X-AI, ensure you have the following:
 ## Installation
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/yourusername/grab-x-ai.git
-   cd grab-x-ai
+   git clone https://github.com/GajendraAwasthi/Grab-X-AI.git
+   cd Grab-X-AI
    ```
 
 2. **Update API Key**:
    - Open `main.c` and replace the `API_KEY` constant with your Gemini API key:
      ```c
+     //In the Program file ther is section for entering api key enter it like below example
      const char *API_KEY = "your-api-key-here";
      ```
 
