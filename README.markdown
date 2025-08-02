@@ -119,7 +119,7 @@ Below are some example screenshots of the GRAB-X-AI interface:
 ### Login Screen
 ![Login Screen](screenshots/login.PNG)
 
-*Description*: The password-protected login interface.
+*Description*: The password-protected login interface.( PASSWORD = 'cybgaz' )
 
 ### Main Menu
 ![Main Menu](screenshots/menu.PNG)
