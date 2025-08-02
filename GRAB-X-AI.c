@@ -2,244 +2,268 @@
 // Developers Gajendra Awasthi , Rejina Pujara , Asmita Bist , Bibhu Shrestha
 // under supervision of BCA Department NAST College
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <time.h>
-#include <ctype.h>
+// Include necessary standard libraries
+#include <stdio.h>       // For input/output operations
+#include <stdlib.h>      // For standard library functions
+#include <string.h>      // For string manipulation functions
+#include <stdbool.h>     // For boolean data type
+#include <unistd.h>      // For POSIX operating system API
+#include <time.h>        // For time-related functions
+#include <ctype.h>       // For character handling functions
 
-#define TMP_RESPONSE_FILE "response.json"
-#define MAX_INPUT 1024
-#define MAX_JSON 2048
-#define MAX_COMMAND 4096
-#define MAX_RESPONSE 4096
-#define PASSWORD "cybgaz" // Default password
-#define MAX_ATTEMPTS 3
-#define SCREEN_WIDTH 80  // Standard terminal width
+// Define constants
+#define TMP_RESPONSE_FILE "response.json"  // Temporary file for API responses
+#define MAX_INPUT 1024                     // Maximum input length
+#define MAX_JSON 2048                      // Maximum JSON payload size
+#define MAX_COMMAND 4096                   // Maximum command length
+#define MAX_RESPONSE 4096                  // Maximum response length
+#define PASSWORD "cybgaz"                  // Default password
+#define MAX_ATTEMPTS 3                     // Maximum login attempts
+#define SCREEN_WIDTH 80                    // Standard terminal width
 
 // Function prototypes
-bool authenticate();
-void showLoginBox();
-void clearScreen();
-void showBanner();
-void showMenu();
-void showHelp();
-void showAbout();
-void startChat();
-void showChatHistory();
-char* escapeJson(const char* input);
-void sendToGemini(const char* userInput, char* response, size_t responseSize);
-void saveChat(const char* user, const char* response);
-void clearJsonFile();
-void initJsonFile();
-void centerText(const char* text);
-void printWrappedText(const char* text, int width);
+bool authenticate();                        // Function to authenticate user
+void showLoginBox();                       // Function to display login box
+void clearScreen();                        // Function to clear terminal screen
+void showBanner();                         // Function to display program banner
+void showMenu();                           // Function to display main menu
+void showHelp();                           // Function to display help menu
+void showAbout();                          // Function to display about information
+void startChat();                          // Function to start chat with AI
+void showChatHistory();                    // Function to show chat history
+char* escapeJson(const char* input);       // Function to escape JSON strings
+void sendToGemini(const char* userInput, char* response, size_t responseSize); // Function to send query to Gemini API
+void saveChat(const char* user, const char* response); // Function to save chat history
+void clearJsonFile();                      // Function to clear JSON file
+void initJsonFile();                       // Function to initialize JSON file
+void centerText(const char* text);         // Function to center text on screen
+void printWrappedText(const char* text, int width); // Function to print wrapped text
 
 // Embed API key here
 const char *API_KEY = "Enter Your Personal Gemini 1.5flash version Api Key";
 
+// Main function - program entry point
 int main() {
+    // Authenticate user
     if (!authenticate()) {
         printf("\nToo many failed attempts. Exiting...\n");
-        return 1;
+        return 1;  // Exit with error code if authentication fails
     }
 
-    char choice;
+    char choice;  // Variable to store user's menu choice
+    
+    // Check if API key is valid
     if (strlen(API_KEY) < 10) {
         fprintf(stderr, "Error: Invalid or missing API key.\n");
-        return 1;
+        return 1;  // Exit if API key is invalid
     }
 
+    // Main program loop
     do {
-        clearScreen();
-        showBanner();
-        showMenu();
+        clearScreen();  // Clear the screen
+        showBanner();   // Display program banner
+        showMenu();     // Display main menu
         printf(" Enter Value: ");
-        scanf(" %c", &choice);
-        getchar(); // Clear newline
+        scanf(" %c", &choice);  // Get user input
+        getchar(); // Clear newline from input buffer
 
+        // Process user choice
         switch (choice) {
         case 'h':
-            showHelp();
+            showHelp();  // Show help menu
             break;
         case 'a':
-            showAbout();
+            showAbout();  // Show about information
             break;
         case 'c':
-            startChat();
+            startChat();  // Start chat with AI
             break;
         case 'o':
-            showChatHistory();
+            showChatHistory();  // Show chat history
             break;
         case 'x':
-            printf("\nExiting GRAB-X-AI. Goodbye!\n");
+            printf("\nExiting GRAB-X-AI. Goodbye!\n");  // Exit program
             break;
         default:
-            printf("Invalid input. Try again.\n");
+            printf("Invalid input. Try again.\n");  // Handle invalid input
             break;
         }
 
+        // Pause before continuing (except when exiting)
         if (choice != 'x') {
             printf("\nPress Enter to continue...");
             getchar();
         }
 
-    } while (choice != 'x');
+    } while (choice != 'x');  // Continue until user chooses to exit
 
-    return 0;
+    return 0;  // Exit program successfully
 }
 
+// Function to authenticate user with password
 bool authenticate() {
-    int attempts = 0;
-    char input[50];
+    int attempts = 0;         // Track login attempts
+    char input[50];           // Buffer for password input
 
+    // Allow up to MAX_ATTEMPTS attempts
     while (attempts < MAX_ATTEMPTS) {
-        clearScreen();
-        showLoginBox();
+        clearScreen();        // Clear screen
+        showLoginBox();       // Show login box
         printf(" Enter Password: ");
 
         // Hide password input
-        system("stty -echo");
-        fgets(input, sizeof(input), stdin);
-        system("stty echo");
+        system("stty -echo"); // Disable echo
+        fgets(input, sizeof(input), stdin);  // Get password input
+        system("stty echo");  // Re-enable echo
 
-        input[strcspn(input, "\n")] = '\0'; // Remove newline
+        input[strcspn(input, "\n")] = '\0'; // Remove newline character
 
+        // Check if password is correct
         if (strcmp(input, PASSWORD) == 0) {
-            return true;
+            return true;  // Return true if password matches
         } else {
-            attempts++;
+            attempts++;    // Increment attempt counter
             printf("\n\n\x1b[31mWrong password! %d attempts remaining.\x1b[0m\n", MAX_ATTEMPTS - attempts);
-            sleep(1);
+            sleep(1);      // Pause before next attempt
         }
     }
-    return false;
+    return false;  // Return false if max attempts reached
 }
 
+// Function to center text on screen
 void centerText(const char* text) {
-    int pad = (SCREEN_WIDTH - strlen(text)) / 2;
-    if (pad < 0) pad = 0;
-    printf("%*s%s%*s\n", pad, "", text, pad, "");
+    int pad = (SCREEN_WIDTH - strlen(text)) / 2;  // Calculate padding
+    if (pad < 0) pad = 0;  // Ensure padding isn't negative
+    printf("%*s%s%*s\n", pad, "", text, pad, "");  // Print centered text
 }
 
+// Function to display login box
 void showLoginBox() {
-    printf("\x1b[34m");
+    printf("\x1b[34m");  // Set blue color
     printf("  _____________________________________________________________  \n");
     printf(" /                                                             \\ \n");
     printf("|                                                               |\n");
-    centerText("\033[1m   \x1b[33mWELCOME TO GRAB-X-AI SYSTEM\x1b[34m  \033[0m");
+    centerText("\033[1m   \x1b[33mWELCOME TO GRAB-X-AI SYSTEM\x1b[34m  \033[0m");  // Centered title
     printf("|                                                               |\n");
-    centerText("\033[1m     \x1b[36mAuthentication Required\x1b[34m       \033[0m");
+    centerText("\033[1m     \x1b[36mAuthentication Required\x1b[34m       \033[0m");  // Centered subtitle
     printf("|                                                               |\n");
     printf(" \\_____________________________________________________________/ \n");
-    printf("\x1b[0m");
+    printf("\x1b[0m");  // Reset color
     printf("\n");
 }
 
+// Function to print text with word wrapping
 void printWrappedText(const char* text, int width) {
-    int current_pos = 0;
-    const char *p = text;
-    const char *last_space = NULL;
-    int last_space_pos = 0;
-    int word_length = 0;
-    const char *word_start = p;
+    int current_pos = 0;          // Track current position in line
+    const char *p = text;         // Pointer to current character
+    const char *last_space = NULL; // Pointer to last space character
+    int last_space_pos = 0;       // Position of last space
+    int word_length = 0;          // Length of current word
+    const char *word_start = p;   // Start of current word
     
+    // Process each character
     while (*p) {
         // Check for word boundaries
         if (*p == ' ' || *p == '\t' || *p == '\n') {
-            last_space = p;
+            last_space = p;        // Remember last space position
             last_space_pos = current_pos;
-            word_length = 0;
+            word_length = 0;      // Reset word length
         } else {
-            word_length++;
+            word_length++;         // Increment word length
         }
         
         // Handle words longer than the width
         if (word_length > width) {
             // Print the part that fits
             while (word_start < p && current_pos < width) {
-                putchar(*word_start);
+                putchar(*word_start);  // Print character
                 word_start++;
                 current_pos++;
             }
-            printf("\n");
-            current_pos = 0;
+            printf("\n");          // New line
+            current_pos = 0;       // Reset position
             continue;
         }
         
+        // Check if we've reached line width
         if (current_pos >= width) {
             if (last_space) {
                 // Print up to the last space
                 while (text < last_space) {
-                    putchar(*text);
+                    putchar(*text);  // Print character
                     text++;
                 }
-                printf("\n");
-                text++; // Skip the space
-                current_pos = 0;
-                p = text;
-                last_space = NULL;
-                word_start = p;
+                printf("\n");      // New line
+                text++;            // Skip the space
+                current_pos = 0;   // Reset position
+                p = text;          // Reset pointer
+                last_space = NULL; // Reset space pointer
+                word_start = p;    // Reset word start
                 continue;
             } else {
                 // No space found, force break
-                printf("\n");
-                current_pos = 0;
+                printf("\n");      // New line
+                current_pos = 0;   // Reset position
             }
         }
         
+        // Handle newlines
         if (*p == '\n') {
-            printf("\n");
-            current_pos = 0;
-            p++;
-            text = p;
-            word_start = p;
+            printf("\n");          // New line
+            current_pos = 0;       // Reset position
+            p++;                   // Move to next character
+            text = p;              // Reset text pointer
+            word_start = p;        // Reset word start
             continue;
         }
         
-        putchar(*p);
-        current_pos++;
-        p++;
+        putchar(*p);  // Print character
+        current_pos++; // Increment position
+        p++;          // Move to next character
     }
-    printf("\n");
+    printf("\n");      // Final newline
 }
 
+// Function to display chat history
 void showChatHistory() {
-    clearScreen();
-    printf("\x1b[36m");
+    clearScreen();  // Clear screen
+    printf("\x1b[36m");  // Set cyan color
     printf("==============================================* CHAT HISTORY *===============================================\n");
-    printf("\x1b[0m");
+    printf("\x1b[0m");   // Reset color
 
+    // Open chat history file
     FILE *file = fopen("chat.txt", "r");
     if (file) {
-        char line[MAX_INPUT];
+        char line[MAX_INPUT];  // Buffer for each line
+        // Read and display each line
         while (fgets(line, sizeof(line), file)) {
             if (line[0] == '[') {
                 printf("\x1b[33m%s\x1b[0m", line); // Highlight timestamps in yellow
             } else {
-                printWrappedText(line, SCREEN_WIDTH);
+                printWrappedText(line, SCREEN_WIDTH);  // Print wrapped text
             }
         }
-        fclose(file);
+        fclose(file);  // Close file
     } else {
-        printf("\x1b[31mNo chat history found!\x1b[0m\n");
+        printf("\x1b[31mNo chat history found!\x1b[0m\n");  // Error if no file
     }
 
-    printf("\x1b[36m");
+    printf("\x1b[36m");  // Set cyan color
     printf("============================================================================================================\n");
-    printf("\x1b[0m");
+    printf("\x1b[0m");   // Reset color
     printf("\nPress Enter to return to menu...");
-    getchar();
+    getchar();  // Wait for user input
 }
 
+// Function to clear terminal screen
 void clearScreen() {
-    printf("\033[H\033[J");
+    printf("\033[H\033[J");  // ANSI escape codes to clear screen
 }
 
+// Function to display program banner
 void showBanner() {
-    printf("\x1b[31m");
+    printf("\x1b[31m");  // Set red color
+    // ASCII art banner
     printf(" _____                                                                   _____ \n");
     printf("( ___ )                                                                 ( ___ )\n");
     printf(" |   |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|   | \n");
@@ -251,9 +275,10 @@ void showBanner() {
     printf(" |___|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|___| \n");
     printf("(_____)                                                                 (_____) \n");
 
-    printf("\x1b[0m");
+    printf("\x1b[0m");  // Reset color
 }
 
+// Function to display main menu
 void showMenu() {
     printf("\n\n");
     printf(" 1. Press \"h\" for help menu!\n");
@@ -263,17 +288,18 @@ void showMenu() {
     printf(" 5. Press \"x\" for exit program!\n\n");
 }
 
+// Function to display help information
 void showHelp() {
-    printf("\x1b[36m");
+    printf("\x1b[36m");  // Set cyan color
     printf("===============================================* HELP MENU *===========================================================\n");
-    printf("\x1b[0m");
-    printf("\x1b[33m");
+    printf("\x1b[0m");   // Reset color
+    printf("\x1b[33m");  // Set yellow color
     printf("\033[1m Welcome to the GRAB-X-AI Help Section\033[0m\n");
-    printf("\x1b[0m");
-    printf("\x1b[36m");
+    printf("\x1b[0m");   // Reset color
+    printf("\x1b[36m");  // Set cyan color
     printf("-----------------------------------------------------------------------------------------------------------------------\n");
-    printf("\x1b[0m");
-    printf("\x1b[32m");
+    printf("\x1b[0m");   // Reset color
+    printf("\x1b[32m");  // Set green color
     printf("\033[1m Project: GRAB-X-AI \033[0m\n");
     printf(" Team: Gajendra Awasthi , Rejina Pujara , Asmita Bist , Bibhu Srestha\n\n");
     printf(" Commands: \n");
@@ -283,17 +309,18 @@ void showHelp() {
     printf(" [o] Old     - View your previous chat history\n");
     printf(" [x] Exit    - Exit the program\n");
     printf("\n - All chats are automatically saved to 'chat.txt' and 'chat_history.json'.\n");
-    printf("\x1b[0m");
-    printf("\x1b[36m");
+    printf("\x1b[0m");   // Reset color
+    printf("\x1b[36m");  // Set cyan color
     printf("=================================================* GRAB - X - AI *=====================================================\n");
-    printf("\x1b[0m");
+    printf("\x1b[0m");   // Reset color
 }
 
+// Function to display about information
 void showAbout() {
-    printf("\x1b[36m");
+    printf("\x1b[36m");  // Set cyan color
     printf("===============================================* ABOUT DEVELOPERS *===================================================\n");
-    printf("\x1b[0m");
-    printf("\x1b[32m");
+    printf("\x1b[0m");   // Reset color
+    printf("\x1b[32m");  // Set green color
     printf(" This software was developed under the supervision of our college NATIONAL ACADEMY OF SCIENCE AND TECHNOLOGY BCA Department.\n");
     printf("\n");
     printf(" The Developer Team:\n");
@@ -301,126 +328,140 @@ void showAbout() {
     printf(" -> Rejina Pujara\n");
     printf(" -> Asmita Bist\n");
     printf(" -> Bibhu Srestha\n");
-    printf("\x1b[0m");
-    printf("\x1b[36m");
+    printf("\x1b[0m");   // Reset color
+    printf("\x1b[36m");  // Set cyan color
     printf("======================================================================================================================\n");
-    printf("\x1b[0m");
+    printf("\x1b[0m");   // Reset color
 }
 
+// Function to start chat with AI
 void startChat() {
-    char input[MAX_INPUT];
-    char response[MAX_RESPONSE];
+    char input[MAX_INPUT];        // Buffer for user input
+    char response[MAX_RESPONSE];  // Buffer for AI response
 
     initJsonFile(); // Initialize JSON file at start of chat
 
+    // Display chat section header
     printf("\033[36m ===============================================* CHAT SECTION *==================================================\033[0m\n");
     printf(" Enter Value:\n Press \"1\" to chat with AI\n Press \"x\" to return to menu\n\n");
     printf("\033[36m ===============================================* CHAT SECTION *==================================================\033[0m\n");
-    char sub;
-    scanf(" %c", &sub);
-    getchar(); // Clear newline
+    char sub;  // Variable for sub-menu choice
+    scanf(" %c", &sub);  // Get user choice
+    getchar(); // Clear newline from input buffer
 
-    if (sub == 'x') return;
+    if (sub == 'x') return;  // Return to main menu if 'x' chosen
 
+    // Chat loop
     while (1) {
-        printf("\nYou: ");
-        if (!fgets(input, sizeof(input), stdin)) {
+        printf("\nYou: ");  // Prompt for user input
+        if (!fgets(input, sizeof(input), stdin)) {  // Get user input
             printf("Error reading input.\n");
             continue;
         }
-        input[strcspn(input, "\n")] = 0; // Remove newline
+        input[strcspn(input, "\n")] = 0; // Remove newline character
 
+        // Check for exit command
         if (strcmp(input, "x") == 0) {
             printf("Returning to menu...\n");
             break;
         }
 
+        // Check for empty input
         if (strlen(input) == 0) {
             printf("Please enter a non-empty message.\n");
             continue;
         }
 
+        // Send input to Gemini API and get response
         sendToGemini(input, response, sizeof(response));
-        printf("GRAB-X-AI: ");
-        printWrappedText(response, SCREEN_WIDTH - 12); // Reserve space for "GRAB-X-AI: "
+        printf("GRAB-X-AI: ");  // Display AI response header
+        printWrappedText(response, SCREEN_WIDTH - 12); // Print wrapped response
 
         // Automatically save every chat
         saveChat(input, response);
     }
 }
 
+// Function to escape special characters in JSON strings
 char* escapeJson(const char* input) {
-    size_t len = strlen(input);
-    char* escaped = malloc(len * 6 + 1); // More space for potential escapes
-    if (!escaped) return NULL;
+    size_t len = strlen(input);  // Get input length
+    // Allocate buffer with extra space for escape sequences
+    char* escaped = malloc(len * 6 + 1); 
+    if (!escaped) return NULL;  // Return NULL if allocation fails
 
-    size_t j = 0;
+    size_t j = 0;  // Index for escaped string
+    // Process each character
     for (size_t i = 0; i < len; i++) {
         switch (input[i]) {
         case '"':
-            escaped[j++] = '\\';
+            escaped[j++] = '\\';  // Escape double quote
             escaped[j++] = '"';
             break;
         case '\\':
-            escaped[j++] = '\\';
+            escaped[j++] = '\\';  // Escape backslash
             escaped[j++] = '\\';
             break;
         case '\n':
-            escaped[j++] = '\\';
+            escaped[j++] = '\\';  // Escape newline
             escaped[j++] = 'n';
             break;
         case '\r':
-            escaped[j++] = '\\';
+            escaped[j++] = '\\';  // Escape carriage return
             escaped[j++] = 'r';
             break;
         case '\t':
-            escaped[j++] = '\\';
+            escaped[j++] = '\\';  // Escape tab
             escaped[j++] = 't';
             break;
         case '\b':
-            escaped[j++] = '\\';
+            escaped[j++] = '\\';  // Escape backspace
             escaped[j++] = 'b';
             break;
         case '\f':
-            escaped[j++] = '\\';
+            escaped[j++] = '\\';  // Escape form feed
             escaped[j++] = 'f';
             break;
         default:
+            // Escape control characters
             if ((unsigned char)input[i] < ' ') {
-                // Escape other control characters
                 sprintf(escaped + j, "\\u%04x", (unsigned char)input[i]);
                 j += 6;
             } else {
-                escaped[j++] = input[i];
+                escaped[j++] = input[i];  // Copy regular characters
             }
             break;
         }
     }
-    escaped[j] = '\0';
+    escaped[j] = '\0';  // Null-terminate escaped string
     return escaped;
 }
 
+// Function to send user input to Gemini API and get response
 void sendToGemini(const char* userInput, char* response, size_t responseSize) {
-    char jsonData[MAX_JSON];
-    char command[MAX_COMMAND];
+    char jsonData[MAX_JSON];  // Buffer for JSON payload
+    char command[MAX_COMMAND]; // Buffer for curl command
 
+    // Escape user input for JSON
     char* escapedInput = escapeJson(userInput);
     if (!escapedInput) {
         snprintf(response, responseSize, "Error: Failed to escape input.");
         return;
     }
 
+    // Create JSON payload
     int written = snprintf(jsonData, sizeof(jsonData),
-                           "{\"contents\":[{\"parts\":[{\"text\":\"%s\"}]}]}",
-                           escapedInput
-                          );
-    free(escapedInput);
+                       "{\"contents\":[{\"parts\":[{\"text\":\"%s\"}]}]}",
+                       escapedInput
+                      );
+    free(escapedInput);  // Free escaped input buffer
 
+    // Check for buffer overflow
     if (written >= sizeof(jsonData)) {
         snprintf(response, responseSize, "Error: Input too long for JSON payload.");
         return;
     }
 
+    // Create curl command to call Gemini API
     written = snprintf(command, sizeof(command),
                        "curl -s -X POST \"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=%s\" "
                        "-H \"Content-Type: application/json\" "
@@ -428,32 +469,35 @@ void sendToGemini(const char* userInput, char* response, size_t responseSize) {
                        API_KEY, jsonData, TMP_RESPONSE_FILE
                       );
 
+    // Check for command buffer overflow
     if (written >= sizeof(command)) {
         snprintf(response, responseSize, "Error: Command buffer overflow.");
         return;
     }
 
+    // Execute curl command
     int ret = system(command);
     if (ret != 0) {
         snprintf(response, responseSize, "Error: Failed to execute curl command.");
         return;
     }
 
+    // Read response from temporary file
     FILE *fp = fopen(TMP_RESPONSE_FILE, "r");
     if (!fp) {
         snprintf(response, responseSize, "Error: Failed to read response file.");
         return;
     }
 
-    char buffer[MAX_RESPONSE];
-    size_t bytesRead = fread(buffer, 1, sizeof(buffer) - 1, fp);
-    buffer[bytesRead] = '\0';
-    fclose(fp);
+    char buffer[MAX_RESPONSE];  // Buffer for response data
+    size_t bytesRead = fread(buffer, 1, sizeof(buffer) - 1, fp);  // Read response
+    buffer[bytesRead] = '\0';  // Null-terminate response
+    fclose(fp);  // Close file
 
     // Parse the JSON response
-    char *textPtr = buffer;
-    char *textStart = NULL;
-    char *textEnd = NULL;
+    char *textPtr = buffer;  // Pointer for parsing
+    char *textStart = NULL;  // Start of text content
+    char *textEnd = NULL;    // End of text content
 
     // Look for the text in the nested JSON structure
     while ((textPtr = strstr(textPtr, "\"text\"")) != NULL) {
@@ -461,10 +505,12 @@ void sendToGemini(const char* userInput, char* response, size_t responseSize) {
         while (*textPtr && *textPtr != ':') textPtr++;
         if (*textPtr == ':') {
             textPtr++;
+            // Skip whitespace
             while (*textPtr && (*textPtr == ' ' || *textPtr == '\t' || *textPtr == '\n' || *textPtr == '\r')) textPtr++;
             if (*textPtr == '"') {
-                textStart = textPtr + 1;
+                textStart = textPtr + 1;  // Start of text content
                 textEnd = textStart;
+                // Find end of text content
                 while (*textEnd && *textEnd != '"') {
                     if (*textEnd == '\\' && *(textEnd + 1) == '"') {
                         textEnd += 2; // Skip escaped quotes
@@ -473,46 +519,49 @@ void sendToGemini(const char* userInput, char* response, size_t responseSize) {
                     }
                 }
                 if (*textEnd == '"') {
-                    break;
+                    break;  // Found complete text content
                 }
             }
         }
     }
 
+    // Process found text content
     if (textStart && textEnd) {
-        size_t textLen = textEnd - textStart;
+        size_t textLen = textEnd - textStart;  // Length of text content
         if (textLen >= responseSize) {
-            textLen = responseSize - 1;
+            textLen = responseSize - 1;  // Truncate if too long
         }
 
         // Unescape the response
-        char *out = response;
-        char *in = textStart;
+        char *out = response;  // Pointer to output buffer
+        char *in = textStart;  // Pointer to input text
         while (in < textEnd && (out - response) < responseSize - 1) {
+            // Handle escape sequences
             if (*in == '\\' && *(in + 1) == 'n') {
-                *out++ = '\n';
+                *out++ = '\n';  // Convert \n to newline
                 in += 2;
             } else if (*in == '\\' && *(in + 1) == '\\') {
-                *out++ = '\\';
+                *out++ = '\\';  // Convert \\ to backslash
                 in += 2;
             } else if (*in == '\\' && *(in + 1) == '"') {
-                *out++ = '"';
+                *out++ = '"';   // Convert \" to quote
                 in += 2;
             } else if (*in == '\\' && *(in + 1) == 't') {
-                *out++ = '\t';
+                *out++ = '\t';  // Convert \t to tab
                 in += 2;
             } else {
-                *out++ = *in++;
+                *out++ = *in++; // Copy regular characters
             }
         }
-        *out = '\0';
+        *out = '\0';  // Null-terminate response
     } else if (strstr(buffer, "\"error\"")) {
+        // Handle API errors
         char *errorStart = strstr(buffer, "\"message\":\"");
         if (errorStart) {
-            errorStart += 11;
+            errorStart += 11;  // Move to start of message
             char *errorEnd = strchr(errorStart, '"');
             if (errorEnd) {
-                *errorEnd = '\0';
+                *errorEnd = '\0';  // Terminate message
                 snprintf(response, responseSize, "API Error: %s", errorStart);
             } else {
                 snprintf(response, responseSize, "API Error: Check response.json for details.");
@@ -521,12 +570,14 @@ void sendToGemini(const char* userInput, char* response, size_t responseSize) {
             snprintf(response, responseSize, "API Error: Check response.json for details.");
         }
     } else {
+        // Handle parsing errors
         snprintf(response, responseSize, "Error: Could not parse AI response. Raw response: %s", buffer);
     }
 }
 
+// Function to save chat to history files
 void saveChat(const char* user, const char* response) {
-    // Get current time with more precise formatting
+    // Get current time with precise formatting
     time_t now;
     time(&now);
     struct tm *local = localtime(&now);
@@ -536,17 +587,18 @@ void saveChat(const char* user, const char* response) {
     // Save to chat.txt with timestamp
     FILE *txtFile = fopen("chat.txt", "a");
     if (txtFile) {
-        fprintf(txtFile, "%s\n", timestamp);
-        fprintf(txtFile, "You: %s\n", user);
-        fprintf(txtFile, "GRAB-X-AI: %s\n\n", response);
+        fprintf(txtFile, "%s\n", timestamp);  // Write timestamp
+        fprintf(txtFile, "You: %s\n", user);  // Write user input
+        fprintf(txtFile, "GRAB-X-AI: %s\n\n", response);  // Write AI response
         fclose(txtFile);
     } else {
         printf("Error: Failed to save chat to chat.txt.\n");
     }
 
-    // Save to chat_history.json with more complete timestamp
+    // Save to chat_history.json with complete timestamp
     FILE *jsonFile = fopen("chat_history.json", "a");
     if (jsonFile) {
+        // Escape strings for JSON
         char *escapedUser = escapeJson(user);
         char *escapedResponse = escapeJson(response);
         
@@ -558,34 +610,37 @@ void saveChat(const char* user, const char* response) {
             return;
         }
 
-        // More detailed timestamp for JSON
+        // Create detailed timestamp for JSON
         char jsonTimestamp[80];
         strftime(jsonTimestamp, sizeof(jsonTimestamp), "%Y-%m-%dT%H:%M:%S%z", local);
         
+        // Write JSON-formatted chat entry
         fprintf(jsonFile, "{\"timestamp\":\"%s\",\"user\":\"%s\",\"response\":\"%s\"}\n",
                 jsonTimestamp, escapedUser, escapedResponse);
         
-        free(escapedUser);
-        free(escapedResponse);
-        fclose(jsonFile);
+        free(escapedUser);      // Free escaped user input
+        free(escapedResponse);  // Free escaped response
+        fclose(jsonFile);       // Close file
     } else {
         printf("Error: Failed to save chat to JSON file.\n");
     }
 }
 
+// Function to initialize JSON file
 void initJsonFile() {
-    FILE *jsonFile = fopen("chat_history.json", "a");
+    FILE *jsonFile = fopen("chat_history.json", "a");  // Open in append mode
     if (jsonFile) {
-        fclose(jsonFile);
+        fclose(jsonFile);  // Close immediately (just creates file if not exists)
     } else {
         printf("Error: Failed to initialize chat history file.\n");
     }
 }
 
+// Function to clear JSON file
 void clearJsonFile() {
-    FILE *jsonFile = fopen("chat_history.json", "w");
+    FILE *jsonFile = fopen("chat_history.json", "w");  // Open in write mode (truncates)
     if (jsonFile) {
-        fclose(jsonFile);
+        fclose(jsonFile);  // Close file
     } else {
         printf("Error: Failed to clear chat history file.\n");
     }
