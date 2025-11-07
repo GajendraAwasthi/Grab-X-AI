@@ -54,7 +54,8 @@ To run GRAB-X-AI, ensure you have the following:
 3. **Compile the Program**:
    - On Linux/macOS:
      ```bash
-     gcc -o Grab-X-AI GRAB-X-AI.c
+     gcc Grab-X-AI.c
+     ./a.out
      ```
    - On Windows (with MinGW):
      ```bash
