@@ -336,52 +336,59 @@ void showAbout() {
 
 // Function to start chat with AI
 void startChat() {
-    char input[MAX_INPUT];        // Buffer for user input
-    char response[MAX_RESPONSE];  // Buffer for AI response
+    char input[MAX_INPUT];      // Buffer for user input
+    char response[MAX_RESPONSE]; // Buffer for AI response
 
-    initJsonFile(); // Initialize JSON file at start of chat
+    initJsonFile(); // Initialize JSON file for chat history
 
     // Display chat section header
     printf("\033[36m ===============================================* CHAT SECTION *==================================================\033[0m\n");
     printf(" Enter Value:\n Press \"1\" to chat with AI\n Press \"x\" to return to menu\n\n");
     printf("\033[36m ===============================================* CHAT SECTION *==================================================\033[0m\n");
-    char sub;  // Variable for sub-menu choice
-    scanf(" %c", &sub);  // Get user choice
+    
+    char sub; // Variable for sub-menu choice
+    printf("Choice: ");
+    scanf(" %c", &sub); // Get user choice
     getchar(); // Clear newline from input buffer
 
-    if (sub == 'x') return;  // Return to main menu if 'x' chosen
+    if (sub == 'x') return; // Return to main menu if 'x' pressed
 
-    // Chat loop
+    printf("\nChat started! Type 'x' to exit chat.\n");
+
+    // Main chat loop
     while (1) {
-        printf("\nYou: ");  // Prompt for user input
-        if (!fgets(input, sizeof(input), stdin)) {  // Get user input
+        printf("\nYou: "); // Prompt for user input
+        fflush(stdout); // Ensure prompt is displayed immediately
+        
+        // Read user input
+        if (!fgets(input, sizeof(input), stdin)) {
             printf("Error reading input.\n");
-            continue;
+            continue; // Skip to next iteration on error
         }
+        
         input[strcspn(input, "\n")] = 0; // Remove newline character
 
         // Check for exit command
         if (strcmp(input, "x") == 0) {
             printf("Returning to menu...\n");
-            break;
+            break; // Exit chat loop
         }
 
         // Check for empty input
         if (strlen(input) == 0) {
-            printf("Please enter a non-empty message.\n");
-            continue;
+            printf("GRAB-X-AI: Please enter a non-empty message.\n");
+            continue; // Skip to next iteration
         }
 
-        // Send input to Gemini API and get response
+        // Send input to Gemini AI and get response
         sendToGemini(input, response, sizeof(response));
-        printf("GRAB-X-AI: ");  // Display AI response header
-        printWrappedText(response, SCREEN_WIDTH - 12); // Print wrapped response
+        printf("GRAB-X-AI: ");
+        printWrappedText(response, SCREEN_WIDTH - 12); // Display wrapped response
 
-        // Automatically save every chat
+        // Automatically save every chat to history
         saveChat(input, response);
     }
 }
-
 // Function to escape special characters in JSON strings
 char* escapeJson(const char* input) {
     size_t len = strlen(input);  // Get input length
@@ -463,7 +470,7 @@ void sendToGemini(const char* userInput, char* response, size_t responseSize) {
 
     // Create curl command to call Gemini API
     written = snprintf(command, sizeof(command),
-                       "curl -s -X POST \"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=%s\" "
+                       "curl -s -X POST \"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=%s\" "
                        "-H \"Content-Type: application/json\" "
                        "-d '%s' > %s",
                        API_KEY, jsonData, TMP_RESPONSE_FILE
