@@ -40,7 +40,7 @@ void centerText(const char* text);         // Function to center text on screen
 void printWrappedText(const char* text, int width); // Function to print wrapped text
 
 // Embed API key here
-const char *API_KEY = "Enter Your Personal Gemini 1.5flash version Api Key";
+const char *API_KEY = "Enter Your Personal Gemini 2.5flash version Api Key";
 
 // Main function - program entry point
 int main() {
